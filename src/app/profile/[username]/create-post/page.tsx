@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 async function createPostContent(data: FormData) {
   "use server";
@@ -11,7 +12,8 @@ async function createPostContent(data: FormData) {
 
   if (post) {
     await db.insert(posts).values({ user: 11, content: post });
-    revalidatePath("");
+    revalidatePath("/");
+    redirect("/");
   }
 }
 
