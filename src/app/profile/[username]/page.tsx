@@ -1,23 +1,33 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { eq } from "drizzle-orm";
+import { eq, not } from "drizzle-orm";
 import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
 export default async function Profile({
   params,
 }: {
   params: { username: string };
 }) {
+  const result = cookies().get("username");
+  console.log(result?.value);
+  if (!result || typeof result.value !== "string") {
+    return (
+      <main>
+        <h1>No user logged in</h1>
+      </main>
+    );
+  }
   const user = await db
     .select()
     .from(users)
     .where(eq(users.username, params.username));
 
   if (!user || user.length === 0) {
-    console.log("User not found");
-    return <div>User not found</div>;
+    notFound();
   }
 
   const curruntUser = user[0].id;

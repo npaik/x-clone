@@ -1,9 +1,10 @@
-"use client";
+// "use client";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
-// import { usePathname } from "next/navigation";
+import { cookies } from "next/headers";
 
-export default function NavBar({ className }: { className?: string }) {
+export default async function NavBar({ className }: { className?: string }) {
+  let cookieUser: string | undefined = cookies().get("username")?.value;
   return (
     <nav
       className={twMerge("flex h-full justify-between items-center", className)}
@@ -40,7 +41,7 @@ export default function NavBar({ className }: { className?: string }) {
         </svg>
       </Link>
       <Link
-        href={`/profile/npaik/create-post`}
+        href={`/create-post`}
         className="hover:bg-neutral-100 dark:hover:bg-neutral-900 flex justify-center items-center h-14 w-20 rounded-md transition-all fill-none stroke-neutral-600"
       >
         <svg
@@ -69,7 +70,7 @@ export default function NavBar({ className }: { className?: string }) {
         </svg>
       </Link>
       <Link
-        href={`/profile/npaik`}
+        href={`/profile/${cookieUser}`}
         className="hover:bg-neutral-100 dark:hover:bg-neutral-900 flex justify-center items-center h-14 w-20 rounded-md transition-all fill-none stroke-neutral-600"
       >
         <svg
@@ -81,6 +82,20 @@ export default function NavBar({ className }: { className?: string }) {
           <title>Profile</title>
           <circle cx="13" cy="7.25" r="4"></circle>
           <path d="M6.26678 23.75H19.744C21.603 23.75 22.5 23.2186 22.5 22.0673C22.5 19.3712 18.8038 15.75 13 15.75C7.19625 15.75 3.5 19.3712 3.5 22.0673C3.5 23.2186 4.39704 23.75 6.26678 23.75Z"></path>
+        </svg>
+      </Link>
+      <Link
+        href={`/login`}
+        className="hover:bg-neutral-100 dark:hover:bg-neutral-900 flex justify-center items-center h-14 w-20 rounded-md transition-all fill-none stroke-neutral-600"
+      >
+        <svg
+          className="w-7 h-7 stroke-2"
+          aria-label="Login"
+          viewBox="0 0 26 26"
+          role="img"
+        >
+          <title>Login</title>
+          <path d="M19.5 1H3.5C2.11929 1 1 2.11929 1 3.5V22.5C1 23.8807 2.11929 25 3.5 25H19.5C20.8807 25 22 23.8807 22 22.5V3.5C22 2.11929 20.8807 1 19.5 1ZM6.5 12H16.5V14H6.5V12ZM20 22.5C20 22.2239 19.7761 22 19.5 22H3.5C3.22386 22 3 22.2239 3 22.5V20H8.5C8.77614 20 9 19.7761 9 19.5C9 19.2239 8.77614 19 8.5 19H3V4.5H20V19H15.5C15.2239 19 15 19.2239 15 19.5C15 19.7761 15.2239 20 15.5 20H21V22.5H20Z"></path>
         </svg>
       </Link>
     </nav>

@@ -4,34 +4,39 @@ import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+let cookieUser: string | undefined = cookies().get("username")?.value;
 
 async function createPostContent(data: FormData) {
   "use server";
 
-  const post = data.get("content") as string;
+  let cookieUser: string | undefined = cookies().get("username")?.value;
 
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.username, cookieUser!));
+  const curruntUserId = user[0].id;
+
+  const post = data.get("content") as string;
+  // console.log(post);
   if (post) {
-    await db.insert(posts).values({ user: 11, content: post });
-    revalidatePath("/");
+    await db.insert(posts).values({ user: curruntUserId, content: post });
     redirect("/");
   }
 }
 
-export default async function CreatePost({
-  params,
-}: {
-  params: { username: string };
-}) {
+export default async function CreatePost() {
   const user = await db
     .select()
     .from(users)
-    .where(eq(users.username, params.username));
+    .where(eq(users.username, cookieUser!));
 
   if (!user || user.length === 0) {
     console.log("User not found");
     return <div>User not found</div>;
   }
-
+  // cookies().get("username")?.value;
   const curruntUserId = user[0].id;
   console.log(curruntUserId); // 11 for npaik
 
@@ -50,6 +55,12 @@ export default async function CreatePost({
             <div className="ml-4 text-xl">{user[0].username}</div>
           </div>
           <form className="flex flex-col" action={createPostContent}>
+            {/* <input
+              type="text"
+              hidden
+              value={curruntUserId}
+              onChange={() => {}}
+            /> */}
             <input
               className="text center py-2 px-4 border border-neutral-400 rounded-3xl"
               name="content"

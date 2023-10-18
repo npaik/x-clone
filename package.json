@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "next": "13.5.4",
+    "next-cookies": "^2.0.3",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^1.14.0"

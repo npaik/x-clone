@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
 
@@ -10,8 +10,8 @@ export default async function FeedPost() {
     .select()
     .from(posts)
     .leftJoin(users, eq(posts.user, users.id)) // Join with users for username and avatar
-    .leftJoin(media, eq(posts.media, media.id)); // Join with media for post's media
-
+    .leftJoin(media, eq(posts.media, media.id)) // Join with media for post's media
+    .orderBy(desc(posts.id)); // Order by post id in descending order
   return (
     <>
       {allPostsData.map((post) => (

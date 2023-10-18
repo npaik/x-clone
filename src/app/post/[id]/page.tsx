@@ -3,18 +3,19 @@ import Image from "next/image";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
+import { revalidatePath } from "next/cache";
 
 export default async function Post({ params }: { params: { id: string } }) {
-  const postId = +params.id;
-
   const allPost = await db
     .select()
     .from(posts)
-    .where(eq(posts.id, postId))
+    .where(eq(posts.id, +params.id))
     .leftJoin(users, eq(posts.user, users.id))
     .leftJoin(media, eq(posts.media, media.id));
 
   const singlePost = allPost[0];
+
+  revalidatePath(`/post/${params.id}`);
 
   if (!singlePost) {
     return <div>Post not found</div>;
