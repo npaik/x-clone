@@ -2,15 +2,13 @@ import React from "react";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-let cookieUser: string | undefined = cookies().get("username")?.value;
 
 async function createPostContent(data: FormData) {
   "use server";
 
-  let cookieUser: string | undefined = cookies().get("username")?.value;
+  let cookieUser = cookies().get("username")?.value;
 
   const user = await db
     .select()
@@ -27,16 +25,19 @@ async function createPostContent(data: FormData) {
 }
 
 export default async function CreatePost() {
+  let cookieUser = cookies().get("username")?.value;
+  if (!cookieUser) {
+    redirect("/login");
+  }
   const user = await db
     .select()
     .from(users)
-    .where(eq(users.username, cookieUser!));
+    .where(eq(users.username, cookieUser));
 
   if (!user || user.length === 0) {
     console.log("User not found");
     return <div>User not found</div>;
   }
-  // cookies().get("username")?.value;
   const curruntUserId = user[0].id;
   console.log(curruntUserId); // 11 for npaik
 

@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { cookies } from "next/headers";
 
 export default async function NavBar({ className }: { className?: string }) {
-  let cookieUser: string | undefined = cookies().get("username")?.value;
+  let cookieUser = cookies().get("username")?.value;
   return (
     <nav
       className={twMerge("flex h-full justify-between items-center", className)}
