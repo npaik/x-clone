@@ -1,42 +1,34 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { eq, not } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/db/";
 import { users, posts, media } from "@/db/schema/table";
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { auth, signOut } from "@/auth";
+import { redirect } from "next/navigation";
+import SignoutButton from "@/components/sign-out-button";
 
-export default async function Profile({
-  params,
-}: {
-  params: { username: string };
-}) {
-  const result = cookies().get("username");
-  console.log(result?.value);
-  if (!result || typeof result.value !== "string") {
-    return (
-      <main>
-        <h1>No user logged in</h1>
-      </main>
-    );
+export default async function Profile() {
+  const session = await auth();
+  console.log("sessionnnnn", session);
+
+  const userEmail = session?.user?.email;
+
+  if (!session) {
+    redirect("/api/auth/signin?callbackUrl=/profile");
   }
+
   const user = await db
     .select()
     .from(users)
-    .where(eq(users.username, params.username));
-
-  if (!user || user.length === 0) {
-    notFound();
-  }
-
-  const curruntUser = user[0].id;
+    .where(eq(users.email, String(userEmail)));
 
   const userMedia = await db
     .select()
-    .from(media)
-    .innerJoin(posts, eq(posts.media, media.id))
-    .where(eq(posts.user, curruntUser));
+    .from(posts)
+    .orderBy(desc(posts.id))
+    .leftJoin(users, eq(posts.user, users.id))
+    .leftJoin(media, eq(posts.media, media.id));
 
   return (
     <>
@@ -55,12 +47,18 @@ export default async function Profile({
         <div className="w-full flex justify-start">
           {user[0].followers} followers
         </div>
+        <SignoutButton
+          signOut={async () => {
+            "use server";
+            await signOut({ redirectTo: "/" });
+          }}
+        />
         <div className="w-full flex justify-start">Posts</div>
         <div>
           <ul>
             {userMedia.map((post) => (
               <li key={post.posts.id}>
-                <div className="post-content">
+                <div className="post-content mt-2">
                   <Link href={`/post/${post.posts.id}`}>
                     {post.posts.content}
                   </Link>

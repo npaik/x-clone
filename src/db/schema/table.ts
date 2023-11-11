@@ -12,6 +12,7 @@ export const typeEnum = pgEnum("type", ["image", "video"]);
 export const users = pgTable("users", {
   id: serial("user_id").primaryKey().notNull(),
   username: varchar("username", { length: 30 }).notNull().unique(),
+  email: varchar("email", { length: 50 }).notNull().unique(),
   firstName: varchar("firstName", { length: 50 }).notNull(),
   lastName: varchar("lastName", { length: 100 }).notNull(),
   avatar: varchar("avatar", { length: 255 }).notNull(),

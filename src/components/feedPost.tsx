@@ -9,9 +9,10 @@ export default async function FeedPost() {
   const allPostsData = await db
     .select()
     .from(posts)
-    .leftJoin(users, eq(posts.user, users.id)) // Join with users for username and avatar
-    .leftJoin(media, eq(posts.media, media.id)) // Join with media for post's media
-    .orderBy(desc(posts.id)); // Order by post id in descending order
+    .orderBy(desc(posts.id))
+    .leftJoin(users, eq(posts.user, users.id)) 
+    .leftJoin(media, eq(posts.media, media.id)); 
+
   return (
     <>
       {allPostsData.map((post) => (
