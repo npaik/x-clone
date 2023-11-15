@@ -13,6 +13,7 @@ module.exports = {
       "example.com",
       "fastly.picsum.photos",
       "www.youtube.com",
+      "www.gravatar.com",
     ],
   },
 };
